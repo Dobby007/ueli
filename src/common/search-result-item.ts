@@ -12,6 +12,7 @@ export interface SearchResultItem {
     searchable: string[];
     supportsAutocompletion?: boolean;
     supportsOpenLocation?: boolean;
+    additionalProperties?: { [ key: string]: any };
 }
 
 export interface SearchResultItemViewModel extends SearchResultItem {
@@ -35,5 +36,6 @@ export function createSearchResultItemViewModel(searchResult: SearchResultItem, 
         searchable: searchResult.searchable,
         supportsAutocompletion: searchResult.supportsAutocompletion,
         supportsOpenLocation: searchResult.supportsOpenLocation,
+        additionalProperties: searchResult.additionalProperties
     };
 }

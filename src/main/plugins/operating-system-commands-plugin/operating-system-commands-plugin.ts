@@ -5,6 +5,7 @@ import { UserConfigOptions } from "../../../common/config/user-config-options";
 import { TranslationSet } from "../../../common/translation/translation-set";
 import { OperatingSystemCommandsOptions } from "../../../common/config/operating-system-commands-options";
 import { OperatingSystemCommandRepository } from "./operating-system-commands-repository";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class OperatingSystemCommandsPlugin implements SearchPlugin {
     public pluginType = PluginType.OperatingSystemCommandsPlugin;
@@ -61,6 +62,14 @@ export class OperatingSystemCommandsPlugin implements SearchPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

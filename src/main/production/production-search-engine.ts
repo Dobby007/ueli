@@ -57,6 +57,7 @@ import { OperatingSystem, OperatingSystemVersion } from "../../common/operating-
 import { BraveBookmarkRepository } from "../plugins/browser-bookmarks-plugin/brave-bookmark-repository";
 import { VivaldiBookmarkRepository } from '../plugins/browser-bookmarks-plugin/vivaldi-bookmark-repository';
 import { getWebearchSuggestions } from "../executors/websearch-suggestion-resolver";
+import { getWebsearchPreview } from "../executors/websearch-preview-resolver";
 
 export function getProductionSearchEngine(
     operatingSystem: OperatingSystem,
@@ -150,7 +151,7 @@ export function getProductionSearchEngine(
         ),
     ];
 
-    const webSearchPlugin = new WebSearchPlugin(config.websearchOptions, translationSet, urlExecutor, getWebearchSuggestions);
+    const webSearchPlugin = new WebSearchPlugin(config.websearchOptions, translationSet, urlExecutor, getWebearchSuggestions, getWebsearchPreview);
 
     const executionPlugins: ExecutionPlugin[] = [
         webSearchPlugin,

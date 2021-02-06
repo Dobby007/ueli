@@ -60,6 +60,7 @@ import { PluginType } from "../main/plugin-type";
 import { dictionarySettingsComponent } from "./settings/dictionary-settings-component";
 import { browserBookmarkSettingsComponent } from "./settings/browser-bookmark-settings-component";
 import { controlPanelSettingsComponent } from "./settings/control-panel-settings-component";
+import { Icon } from "../common/icon/icon";
 
 Vue.component("user-input", userInputComponent);
 Vue.component("search-results", searchResultsComponent);
@@ -122,6 +123,12 @@ const app = new Vue({
         vueEventDispatcher.$on(VueEventChannels.handleExecution, (userInput: string, searchResultIem: SearchResultItem | undefined, privileged: boolean) => {
             if (searchResultIem !== undefined) {
                 ipcRenderer.send(IpcChannels.execute, userInput, searchResultIem, privileged);
+            }
+        });
+
+        vueEventDispatcher.$on(VueEventChannels.handlePreview, (userInput: string, searchResultIem: SearchResultItem | undefined, privileged: boolean) => {
+            if (searchResultIem !== undefined) {
+                ipcRenderer.send(IpcChannels.preview, userInput, searchResultIem);
             }
         });
 
@@ -233,6 +240,10 @@ const app = new Vue({
 
         ipcRenderer.on(IpcChannels.autoCompleteResponse, (event: Electron.Event, updatedUserInput: string) => {
             vueEventDispatcher.$emit(VueEventChannels.autoCompletionResponse, updatedUserInput);
+        });
+
+        ipcRenderer.on(IpcChannels.activatePreviewMode, (event: Electron.Event, displayedText: string, displayedIcon?: Icon) => {
+            vueEventDispatcher.$emit(VueEventChannels.activatePreviewMode, displayedText, displayedIcon);
         });
     },
     methods: {

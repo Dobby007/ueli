@@ -3,6 +3,7 @@ import { SearchResultItem } from "../common/search-result-item";
 import { PluginType } from "../main/plugin-type";
 import { UserConfigOptions } from "../common/config/user-config-options";
 import { TranslationSet } from "../common/translation/translation-set";
+import { PreviewResult } from "../common/preview-result";
 
 export class FakeExecutionPlugin implements ExecutionPlugin {
     public pluginType = PluginType.Test;
@@ -33,6 +34,14 @@ export class FakeExecutionPlugin implements ExecutionPlugin {
         return this.enabled;
     }
 
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
+    }
+    
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {
         throw new Error("Method not implemented.");
     }

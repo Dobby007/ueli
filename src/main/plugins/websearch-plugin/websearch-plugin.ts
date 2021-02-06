@@ -3,10 +3,14 @@ import { PluginType } from "../../plugin-type";
 import { UserConfigOptions } from "../../../common/config/user-config-options";
 import { WebSearchOptions } from "../../../common/config/websearch-options";
 import { ExecutionPlugin } from "../../execution-plugin";
-import { WebSearchEngine } from "./web-search-engine";
+import { SearchResponseSchema, WebSearchEngine } from "./web-search-engine";
 import { TranslationSet } from "../../../common/translation/translation-set";
 import { defaultWebSearchIcon } from "../../../common/icon/default-icons";
 import { isValidIcon } from "../../../common/icon/icon-helpers";
+import { value } from "jsonpath";
+import { PreviewResult } from "../../../common/preview-result";
+import { IconType } from "../../../common/icon/icon-type";
+import { Icon } from "../../../common/icon/icon";
 
 export class WebSearchPlugin implements ExecutionPlugin {
     public readonly pluginType = PluginType.WebSearchPlugin;
@@ -20,6 +24,7 @@ export class WebSearchPlugin implements ExecutionPlugin {
         translationSet: TranslationSet,
         urlExecutor: (url: string) => Promise<void>,
         suggestionResolver: (url: string) => Promise<any>,
+        private readonly previewResolver: (url: string) => Promise<any>,
     ) {
         this.config = userConfig;
         this.translationSet = translationSet;
@@ -51,10 +56,8 @@ export class WebSearchPlugin implements ExecutionPlugin {
 
             this.getSuggestions(suggestionWebSearchEngines, userInput)
                 .then((suggestions) => {
-                    const results: SearchResultItem[] = [];
-
                     for (const webSearchEngine of webSearchEngines) {
-                        results.push({
+                        suggestions.unshift({
                             description: this.buildDescription(webSearchEngine, userInput),
                             executionArgument: this.buildExecutionArgument(webSearchEngine, userInput),
                             hideMainWindowAfterExecution: true,
@@ -62,12 +65,13 @@ export class WebSearchPlugin implements ExecutionPlugin {
                             name: webSearchEngine.name,
                             originPluginType: this.pluginType,
                             searchable: [],
+                            additionalProperties: {
+                                websearchEngine: webSearchEngine
+                            }
                         });
                     }
 
-                    suggestions.forEach((suggestion) => results.push(suggestion));
-
-                    resolve(results);
+                    resolve(suggestions);
                 })
                 .catch((error) => reject(error));
         });
@@ -77,6 +81,58 @@ export class WebSearchPlugin implements ExecutionPlugin {
         return userInput !== undefined
             && userInput.length > 0
             && this.userInputMatches(userInput, fallback);
+    }
+
+    public isPreviewSupported(): boolean {
+        return true;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return new Promise((resolve, reject) => {
+            if (!searchResultItem.additionalProperties?.websearchEngine)
+                return reject("No engine was passed in the event");
+
+            const websearchEngine: WebSearchEngine = searchResultItem.additionalProperties?.websearchEngine;
+
+            if (!websearchEngine.searchApiUrl)
+                return reject("No Search API URL is set for the passed search engine");
+                
+            if (!websearchEngine.searchResponseSchema || !websearchEngine.searchResponseSchema?.itemsPath)
+                return reject("JSON path to items array is not set for the passed search engine");
+
+            if (searchResultItem.name) {
+                const searchApiUrl = this.replaceQueryInUrl(searchResultItem.name, websearchEngine.searchApiUrl as string);
+                
+                this.previewResolver(searchApiUrl)
+                    .then((response) => {
+                        let items: any[] = value(response, websearchEngine.searchResponseSchema?.itemsPath as string);
+                        const websearchEngineIcon = isValidIcon(websearchEngine.icon) ? websearchEngine.icon : defaultWebSearchIcon;
+
+                        const searchResultItems = items.map(item => {
+                            const schema = websearchEngine.searchResponseSchema as SearchResponseSchema;
+                            return {
+                                description: this.getValueBasedOnJsonPath(item, schema.description),
+                                executionArgument: "",
+                                hideMainWindowAfterExecution: true,
+                                icon: this.getSearchResultItemIcon(item, schema, websearchEngineIcon),
+                                name: this.getValueBasedOnJsonPath(item, schema.title),
+                                originPluginType: this.pluginType,
+                                searchable: []
+                            } as SearchResultItem;
+                        });
+
+                        resolve({
+                            newSearchResultItems: searchResultItems,
+                            displayedText: this.buildDescription(websearchEngine, searchResultItem.name),
+                            displayedIcon: websearchEngine.icon
+                        } as PreviewResult);
+                    })
+                    .catch((error) => reject(error));
+            } else {
+                resolve(null);
+            }
+
+        });
     }
 
     public execute(searchResultItem: SearchResultItem): Promise<void> {
@@ -95,8 +151,13 @@ export class WebSearchPlugin implements ExecutionPlugin {
         });
     }
 
-    private getSearchTerm(webSearchEngine: WebSearchEngine, userInput: string): string {
-        let searchTerm = userInput.replace(webSearchEngine.prefix, "");
+    private getSearchResultItemIcon(item: SearchResultItem, schema: SearchResponseSchema, defaultIcon: Icon) {
+        const iconUrl: string = this.getValueBasedOnJsonPath(item, schema.icon);
+        return iconUrl ? { type: IconType.URL, parameter: this.getValueBasedOnJsonPath(item, schema.icon) } : defaultIcon;
+    }
+
+    private getSearchTerm(webSearchEngine: WebSearchEngine, userInput: string, encode: boolean = true): string {
+        let searchTerm = userInput.replace(new RegExp('^' + webSearchEngine.prefix + "\\s*"), "");
 
         if (webSearchEngine.encodeSearchTerm) {
             searchTerm = encodeURIComponent(searchTerm);
@@ -108,7 +169,7 @@ export class WebSearchPlugin implements ExecutionPlugin {
     private buildDescription(webSearchEngine: WebSearchEngine, userInput: string): string {
         return this.translationSet.websearchDescription
             .replace("{{websearch_engine}}", webSearchEngine.name)
-            .replace("{{search_term}}", this.getSearchTerm(webSearchEngine, userInput));
+            .replace("{{search_term}}", this.getSearchTerm(webSearchEngine, userInput, false));
     }
 
     private buildExecutionArgument(webSearchEngine: WebSearchEngine, userInput: string): string {
@@ -147,10 +208,14 @@ export class WebSearchPlugin implements ExecutionPlugin {
         return new Promise((resolve, reject) => {
             if (websearchEngine.suggestionUrl && searchTerm) {
                 const suggestionUrl = this.replaceQueryInUrl(searchTerm, websearchEngine.suggestionUrl);
-
+                
                 this.suggestionResolver(suggestionUrl)
                     .then((response) => {
-                        const suggestions: string[] = response[1];
+                        let suggestions: string[];
+                        if (websearchEngine.searchResponseSchema?.itemsPath)
+                            suggestions = value(response, websearchEngine.searchResponseSchema?.itemsPath);
+                        else
+                            suggestions = response[1];
 
                         const searchResultItems = suggestions.map((suggestion): SearchResultItem => {
                             return {
@@ -161,6 +226,9 @@ export class WebSearchPlugin implements ExecutionPlugin {
                                 name: suggestion,
                                 originPluginType: this.pluginType,
                                 searchable: [],
+                                additionalProperties: {
+                                    websearchEngine: websearchEngine
+                                }
                             };
                         });
 
@@ -172,6 +240,10 @@ export class WebSearchPlugin implements ExecutionPlugin {
             }
 
         });
+    }
+
+    private getValueBasedOnJsonPath(obj: any, jsonPath?: string): string {
+        return jsonPath ? value(obj, jsonPath) : "";
     }
 
     private replaceQueryInUrl(query: string, url: string): string {

@@ -7,6 +7,7 @@ import { TranslationSet } from "../../../common/translation/translation-set";
 import { Definition } from "./dictionary";
 import { defaultDictionaryIcon } from "../../../common/icon/default-icons";
 import { capitalize } from "../../../common/helpers/string-helpers";
+import { PreviewResult } from "../../../common/preview-result";
 
 interface DictionaryResult {
     definition: string;
@@ -54,6 +55,14 @@ export class DictionaryPlugin implements ExecutionPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

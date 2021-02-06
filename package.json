@@ -65,7 +65,9 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
+    "@types/jsonpath": "^0.2.0",
     "bulma": "^0.9.0",
-    "bulma-extensions": "^6.2.7"
+    "bulma-extensions": "^6.2.7",
+    "jsonpath": "1.1.0"
   }
 }

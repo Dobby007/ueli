@@ -6,6 +6,7 @@ import { defaultErrorIcon, defaultFileIcon } from "../../../common/icon/default-
 import { MdFindOptions } from "../../../common/config/mdfind-options";
 import { OpenLocationPlugin } from "../../open-location-plugin";
 import { Icon } from "../../../common/icon/icon";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class MdFindPlugin implements ExecutionPlugin, OpenLocationPlugin {
     public readonly pluginType = PluginType.MdFindExecutionPlugin;
@@ -51,6 +52,14 @@ export class MdFindPlugin implements ExecutionPlugin, OpenLocationPlugin {
 
     public isEnabled(): boolean {
         return this.config.enabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

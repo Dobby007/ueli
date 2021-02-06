@@ -9,4 +9,15 @@ export interface WebSearchEngine {
     isFallback: boolean;
     encodeSearchTerm: boolean;
     suggestionUrl?: string;
+    isSearchApiSupported: boolean;
+    searchApiUrl?: string;
+    searchResponseSchema?: SearchResponseSchema;
+}
+
+export interface SearchResponseSchema {
+    itemsPath: string,
+    icon?: string;
+    title: string;
+    url: string;
+    description?: string;
 }

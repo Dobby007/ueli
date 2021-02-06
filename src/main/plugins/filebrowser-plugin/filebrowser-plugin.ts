@@ -14,6 +14,7 @@ import Fuse from "fuse.js";
 import { createFilePathDescription } from "../../helpers/file-path-helpers";
 import { OpenLocationPlugin } from "../../open-location-plugin";
 import { AutoCompletionPlugin } from "../../auto-completion-plugin";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class FileBrowserExecutionPlugin implements ExecutionPlugin, AutoCompletionPlugin, OpenLocationPlugin {
     public readonly pluginType = PluginType.FileBrowserPlugin;
@@ -55,6 +56,14 @@ export class FileBrowserExecutionPlugin implements ExecutionPlugin, AutoCompleti
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

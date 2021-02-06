@@ -7,6 +7,7 @@ import { EverythingSearchOptions } from "../../../common/config/everything-searc
 import { defaultFileIcon, defaultFolderIcon } from "../../../common/icon/default-icons";
 import { OpenLocationPlugin } from "../../open-location-plugin";
 import { Icon } from "../../../common/icon/icon";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class EverythingPlugin implements ExecutionPlugin, OpenLocationPlugin {
     public pluginType: PluginType = PluginType.EverythingSearchPlugin;
@@ -39,6 +40,14 @@ export class EverythingPlugin implements ExecutionPlugin, OpenLocationPlugin {
                 .then((result) => resolve(result))
                 .catch((err) => reject(err));
         });
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

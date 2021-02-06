@@ -9,6 +9,7 @@ import { isValidIcon } from "./../../../common/icon/icon-helpers";
 import { OpenLocationPlugin } from "../../open-location-plugin";
 import { stringIsWhiteSpace } from "../../../common/helpers/string-helpers";
 import { getDefaultShortcutIcon } from "./shortcut-helpers";
+import { PreviewResult } from "../../../common/preview-result";
 
 interface ExecutionArgumentDecodeResult {
     shortcutType: ShortcutType;
@@ -47,6 +48,14 @@ export class ShortcutsSearchPlugin implements SearchPlugin, OpenLocationPlugin {
         return new Promise((resolve) => {
             resolve();
         });
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

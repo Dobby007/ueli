@@ -29,6 +29,7 @@ export const defaultWebSearchOptions: WebSearchOptions = {
             priority: 1,
             url: "https://duckduckgo.com/?q={{query}}",
             suggestionUrl: "https://ac.duckduckgo.com/ac/?q={{query}}&type=list",
+            isSearchApiSupported: false
         },
         {
             encodeSearchTerm: true,
@@ -49,6 +50,7 @@ export const defaultWebSearchOptions: WebSearchOptions = {
             priority: 2,
             url: "https://google.com/search?q={{query}}",
             suggestionUrl: "https://www.google.com/complete/search?client=opera&q={{query}}",
+            isSearchApiSupported: false,
         },
         {
             encodeSearchTerm: true,
@@ -73,6 +75,7 @@ export const defaultWebSearchOptions: WebSearchOptions = {
             priority: 3,
             url: "https://www.google.com/search?tbm=isch&q={{query}}",
             suggestionUrl: "https://www.google.com/complete/search?ds=i&output=firefox&q={{query}}",
+            isSearchApiSupported: false,
         },
         {
             encodeSearchTerm: true,
@@ -90,6 +93,7 @@ export const defaultWebSearchOptions: WebSearchOptions = {
             priority: 4,
             url: "https://en.wikipedia.org/wiki/{{query}}",
             suggestionUrl: "https://en.wikipedia.org/w/api.php?action=opensearch&search={{query}}",
+            isSearchApiSupported: false,
         },
         {
             encodeSearchTerm: true,
@@ -108,6 +112,7 @@ export const defaultWebSearchOptions: WebSearchOptions = {
             priority: 5,
             url: "https://www.youtube.com/results?search_query={{query}}",
             suggestionUrl: "https://www.google.com/complete/search?ds=yt&output=firefox&q={{query}}",
+            isSearchApiSupported: false,
         },
         {
             encodeSearchTerm: true,
@@ -121,6 +126,27 @@ export const defaultWebSearchOptions: WebSearchOptions = {
             priority: 6,
             url: "https://www.bing.com/search?q={{query}}",
             suggestionUrl: "https://www.bing.com/osjson.aspx?query={{query}}",
+            isSearchApiSupported: false,
+        },
+        {
+            encodeSearchTerm: true,
+            icon: {
+                parameter: `<svg width="256px" height="320px" viewBox="0 0 256 320" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid"><g><path d="M95.055,82.908 L127.636,153.555 L175.78,175.332 L2.125,266.695 L73.279,203.267 L73.279,22.449 L0,0 L0,268.932 L72.83,319.986 L256,210.88 L256,132.227 L95.055,82.908" fill="#F4BD27"></path></g></svg>`,
+                type: IconType.SVG,
+            },
+            isFallback: false,
+            name: "Bing",
+            prefix: "b?",
+            priority: 6,
+            url: "https://www.bing.com/search?q={{query}}",
+            suggestionUrl: "https://api-v2v3search-0.nuget.org/autocomplete?q={{query}}&prerelease=true",
+            searchApiUrl: "https://azuresearch-usnc.nuget.org/query?q={{query}}&prerelease=false",
+            isSearchApiSupported: true,
+            searchResponseSchema: {
+                title: '$.data',
+                url: 'https://google.com',
+                itemsPath: '$.data'
+            }
         },
     ],
 };

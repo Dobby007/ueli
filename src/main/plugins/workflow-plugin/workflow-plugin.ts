@@ -8,6 +8,7 @@ import { WorkflowExecutionStep } from "./workflow-execution-argument";
 import { WorkflowExecutionArgumentType } from "./workflow-execution-argument-type";
 import { Workflow } from "./workflow";
 import { defaultWorkflowIcon } from "../../../common/icon/default-icons";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class WorkflowPlugin implements SearchPlugin {
     public pluginType = PluginType.Workflow;
@@ -57,6 +58,14 @@ export class WorkflowPlugin implements SearchPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

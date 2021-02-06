@@ -12,6 +12,7 @@ import { OpenLocationPlugin } from "./open-location-plugin";
 import { AutoCompletionPlugin } from "./auto-completion-plugin";
 import { PluginType } from "./plugin-type";
 import { SearchEngineOptions } from "../common/config/search-engine-options";
+import { PreviewResult } from "../common/preview-result";
 
 interface FuseResult {
     item: SearchResultItem;
@@ -101,6 +102,22 @@ export class SearchEngine {
                     .catch((err: string) => reject(err));
             } else {
                 reject("Error while trying to execute search result item. No plugin found for this search result item");
+            }
+        });
+    }
+
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return new Promise((resolve, reject) => {
+            const originPlugin = this.getAllPlugins()
+                .filter((plugin) => plugin.isEnabled())
+                .find((plugin) => plugin.pluginType === searchResultItem.originPluginType);
+
+            if (originPlugin !== undefined && originPlugin.isPreviewSupported) {
+                originPlugin.preview(searchResultItem)
+                    .then((previewResult) => resolve(previewResult))
+                    .catch((err: string) => reject(err));
+            } else {
+                reject("Preview is not supported by the plugin or no plugin found for this search result item");
             }
         });
     }

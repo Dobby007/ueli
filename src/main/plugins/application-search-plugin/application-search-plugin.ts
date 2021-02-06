@@ -7,6 +7,7 @@ import { UserConfigOptions } from "../../../common/config/user-config-options";
 import { ApplicationSearchOptions } from "../../../common/config/application-search-options";
 import { createFilePathDescription } from "../../helpers/file-path-helpers";
 import { OpenLocationPlugin } from "../../open-location-plugin";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class ApplicationSearchPlugin implements SearchPlugin, OpenLocationPlugin {
     public readonly pluginType = PluginType.ApplicationSearchPlugin;
@@ -34,6 +35,14 @@ export class ApplicationSearchPlugin implements SearchPlugin, OpenLocationPlugin
                 })
                 .catch((err) => reject(err));
         });
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

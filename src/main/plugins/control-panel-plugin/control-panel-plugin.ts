@@ -9,6 +9,7 @@ import { ControlPanelItem } from "./control-panel-item";
 import { defaultControlPanelIcon } from "../../../common/icon/default-icons";
 import { ControlPanelItemsRetriever } from "./control-panel-items-retriever";
 import { executeCommand } from "../../executors/command-executor";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class ControlPanelPlugin implements SearchPlugin {
     public pluginType = PluginType.ControlPanel;
@@ -22,6 +23,14 @@ export class ControlPanelPlugin implements SearchPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

@@ -6,6 +6,7 @@ import { TranslationSet } from "../../../common/translation/translation-set";
 import { BrowserBookmark } from "./browser-bookmark";
 import { BrowserBookmarksOptions } from "../../../common/config/browser-bookmarks-options";
 import { BrowserBookmarkRepository } from "./browser-bookmark-repository";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class BrowserBookmarksPlugin implements SearchPlugin {
     public readonly pluginType = PluginType.BrowserBookmarks;
@@ -53,6 +54,14 @@ export class BrowserBookmarksPlugin implements SearchPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

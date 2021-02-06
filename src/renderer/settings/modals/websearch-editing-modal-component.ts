@@ -65,6 +65,12 @@ export const websearchEditingModal = Vue.extend({
         vueEventDispatcher.$on(VueEventChannels.openWebSearchEditingModal, (websearchEngine: WebSearchEngine, editMode: ModalEditMode, saveIndex?: number) => {
             this.visible = true;
             this.websearchEngine = websearchEngine;
+            if (!websearchEngine.searchResponseSchema)
+                websearchEngine.searchResponseSchema = {
+                    itemsPath: "",
+                    title: "",
+                    url: ""
+                };
             this.editMode = editMode;
             this.initalWebSearchEngine = deepCopy(websearchEngine);
             this.saveIndex = saveIndex;
@@ -116,6 +122,73 @@ export const websearchEditingModal = Vue.extend({
                         </label>
                         <div class="control is-expanded">
                             <input class="input" type="url" v-model="websearchEngine.suggestionUrl" placeholder="Suggestion URL">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">
+                            Search API supported
+                        </label>
+                        <div class="control is-expanded">
+                            <input class="is-checkradio" id="isSearchApiSupportedCheckbox" type="checkbox" name="isSearchApiSupported" v-model="websearchEngine.isSearchApiSupported">
+                            <label for="isSearchApiSupportedCheckbox"></label>
+                            <div class="field">
+                                <input class="is-checkradio is-block is-success" id="isSearchApiSupportedCheckbox" type="checkbox" name="isSearchApiSupportedCheckbox" checked="checked">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field" v-if="websearchEngine.isSearchApiSupported">
+                        <label class="label">
+                            Search API URL:
+                        </label>
+                        <div class="control is-expanded">
+                            <input class="input" type="url" v-model="websearchEngine.searchApiUrl" placeholder="Search API URL">
+                        </div>
+                    </div>
+
+                    <div class="field" v-if="websearchEngine.isSearchApiSupported">
+                        <label class="label">
+                            JSON path to items array:
+                        </label>
+                        <div class="control is-expanded">
+                            <input class="input" type="url" v-model="websearchEngine.searchResponseSchema.itemsPath" placeholder="JSON path to items array">
+                        </div>
+                    </div>
+
+                    <div class="field" v-if="websearchEngine.isSearchApiSupported">
+                        <label class="label">
+                            JSON path to title:
+                        </label>
+                        <div class="control is-expanded">
+                            <input class="input" type="url" v-model="websearchEngine.searchResponseSchema.title" placeholder="$.title">
+                        </div>
+                    </div>
+
+                    <div class="field" v-if="websearchEngine.isSearchApiSupported">
+                        <label class="label">
+                            JSON path to url:
+                        </label>
+                        <div class="control is-expanded">
+                            <input class="input" type="url" v-model="websearchEngine.searchResponseSchema.url" placeholder="$.url">
+                        </div>
+                    </div>
+
+                    <div class="field" v-if="websearchEngine.isSearchApiSupported">
+                        <label class="label">
+                            JSON path to description:
+                        </label>
+                        <div class="control is-expanded">
+                            <input class="input" type="url" v-model="websearchEngine.searchResponseSchema.description" placeholder="$.description">
+                        </div>
+                    </div>
+
+                    <div class="field" v-if="websearchEngine.isSearchApiSupported">
+                        <label class="label">
+                            JSON path to icon:
+                        </label>
+                        <div class="control is-expanded">
+                            <input class="input" type="url" v-model="websearchEngine.searchResponseSchema.icon" placeholder="$.icon">
                         </div>
                     </div>
 

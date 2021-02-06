@@ -11,6 +11,7 @@ import { OpenLocationPlugin } from "../../open-location-plugin";
 import { FileSearchOption } from "../../executors/file-searchers";
 import { defaultFileIcon, defaultFolderIcon } from "../../../common/icon/default-icons";
 import { AutoCompletionPlugin } from "../../auto-completion-plugin";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class SimpleFolderSearchPlugin implements SearchPlugin, AutoCompletionPlugin, OpenLocationPlugin {
     public pluginType = PluginType.SimpleFolderSearch;
@@ -81,6 +82,14 @@ export class SimpleFolderSearchPlugin implements SearchPlugin, AutoCompletionPlu
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

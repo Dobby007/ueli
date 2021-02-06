@@ -13,6 +13,12 @@ export const defaultNewWebSearchEngine: WebSearchEngine = {
     prefix: "",
     priority: 0,
     url: "",
+    isSearchApiSupported: false,
+    searchResponseSchema: {
+        itemsPath: "",
+        url: "",
+        title: ""
+    }
 };
 
 export function isValidWebSearchEngineToAdd(websearchEngine: WebSearchEngine): boolean {

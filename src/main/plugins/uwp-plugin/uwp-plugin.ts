@@ -5,6 +5,7 @@ import { TranslationSet } from "../../../common/translation/translation-set";
 import { PluginType } from "../../plugin-type";
 import { UwpApplication } from "./uwp-application";
 import { UwpSearchOptions } from "../../../common/config/uwp-search-options";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class UwpPlugin implements SearchPlugin {
     public pluginType = PluginType.Uwp;
@@ -22,6 +23,14 @@ export class UwpPlugin implements SearchPlugin {
         this.filePathExecutor = filePathExecutor;
         this.uwpAppsRetriever = uwpAppsRetriever;
         this.uwpApps = [];
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public getAll(): Promise<SearchResultItem[]> {

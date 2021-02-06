@@ -7,6 +7,7 @@ import { Calculator } from "./calculator";
 import { CalculatorOptions } from "../../../common/config/calculator-options";
 import { defaultCalculatorIcon } from "../../../common/icon/default-icons";
 import { GeneralOptions } from "../../../common/config/general-options";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class CalculatorPlugin implements ExecutionPlugin {
     public pluginType = PluginType.Calculator;
@@ -50,6 +51,14 @@ export class CalculatorPlugin implements ExecutionPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

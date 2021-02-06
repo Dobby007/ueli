@@ -6,6 +6,7 @@ import { capitalize } from "../../../common/helpers/string-helpers";
 import { defaultErrorIcon, defaultTranslatorIcon } from "../../../common/icon/default-icons";
 import { LingueeTranslator } from "./linguee-translator";
 import { TranslationOptions } from "../../../common/config/translation-options";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class TranslationPlugin implements ExecutionPlugin {
     public readonly pluginType = PluginType.TranslationPlugin;
@@ -16,6 +17,14 @@ export class TranslationPlugin implements ExecutionPlugin {
     constructor(config: TranslationOptions, clipboardCopier: (value: string) => Promise<void>) {
         this.config = config;
         this.clipboardCopier = clipboardCopier;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem): Promise<void> {

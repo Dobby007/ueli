@@ -6,6 +6,7 @@ import { PluginType } from "../../plugin-type";
 import { UrlOptions } from "../../../common/config/url-options";
 import { defaultUrlIcon } from "../../../common/icon/default-icons";
 import { isValidUrl } from "../../../common/helpers/url-helpers";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class UrlPlugin implements ExecutionPlugin {
     public readonly pluginType = PluginType.Url;
@@ -51,6 +52,14 @@ export class UrlPlugin implements ExecutionPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

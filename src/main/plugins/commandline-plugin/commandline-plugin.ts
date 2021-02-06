@@ -7,6 +7,7 @@ import { defaultTerminalIcon } from "../../../common/icon/default-icons";
 import { CommandlineOptions } from "../../../common/config/commandline-options";
 import { WindowsShell, MacOsShell } from "./shells";
 import { Logger } from "../../../common/logger/logger";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class CommandlinePlugin implements ExecutionPlugin {
     public pluginType = PluginType.Commandline;
@@ -41,6 +42,14 @@ export class CommandlinePlugin implements ExecutionPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

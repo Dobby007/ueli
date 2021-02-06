@@ -35,6 +35,7 @@ import { PluginType } from "./plugin-type";
 import { getRescanIntervalInMilliseconds } from "./helpers/rescan-interval-helpers";
 import { openUrlInBrowser } from "./executors/url-executor";
 import { OperatingSystem } from "../common/operating-system";
+import { Icon } from "../common/icon/icon";
 
 if (!FileHelpers.fileExistsSync(ueliTempFolder)) {
     FileHelpers.createFolderSync(ueliTempFolder);
@@ -593,6 +594,10 @@ function updateSearchResults(results: SearchResultItem[], webcontents: WebConten
     webcontents.send(IpcChannels.searchResponse, results);
 }
 
+function activatePreviewMode(webcontents: WebContents, displayedText: string, displayedIcon?: Icon) {
+    webcontents.send(IpcChannels.activatePreviewMode, displayedText, displayedIcon);
+}
+
 function noSearchResultsFound() {
     if (windowExists(mainWindow)) {
         updateMainWindowSize(1, config.appearanceOptions);
@@ -650,6 +655,23 @@ function registerAllIpcListeners() {
             })
             .catch((err) => logger.error(err))
             .finally(() => event.sender.send(IpcChannels.executionFinished));
+    });
+
+    ipcMain.on(IpcChannels.preview, (event, userInput: string, searchResultItem: SearchResultItem) => {
+        searchEngine.preview(searchResultItem)
+            .then((previewResult) => {
+                if (previewResult == null)
+                    return;
+                    
+                activatePreviewMode(event.sender, previewResult.displayedText, previewResult.displayedIcon);
+                if (previewResult.newSearchResultItems) {
+                    updateSearchResults(previewResult.newSearchResultItems, event.sender)
+                }
+            })
+            .catch((err) => {
+                logger.debug(err);
+                noSearchResultsFound();
+            });
     });
 
     ipcMain.on(IpcChannels.openSearchResultLocation, (event: Electron.Event, searchResultItem: SearchResultItem) => {

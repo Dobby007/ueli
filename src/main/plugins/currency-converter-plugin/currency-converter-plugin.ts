@@ -9,6 +9,7 @@ import { CurrencyConverter } from "./currency-converter";
 import { CurrencyConversion } from "./currency-conversion";
 import { defaultCurrencyExchangeIcon } from "../../../common/icon/default-icons";
 import { GeneralOptions } from "../../../common/config/general-options";
+import { PreviewResult } from "../../../common/preview-result";
 
 export class CurrencyConverterPlugin implements ExecutionPlugin {
     public readonly pluginType = PluginType.CurrencyConverter;
@@ -77,6 +78,14 @@ export class CurrencyConverterPlugin implements ExecutionPlugin {
 
     public isEnabled(): boolean {
         return this.config.isEnabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {

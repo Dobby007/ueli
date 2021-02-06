@@ -3,6 +3,7 @@ import { PluginType } from "../main/plugin-type";
 import { SearchResultItem } from "../common/search-result-item";
 import { UserConfigOptions } from "../common/config/user-config-options";
 import { TranslationSet } from "../common/translation/translation-set";
+import { PreviewResult } from "../common/preview-result";
 
 export class FakeSearchPlugin implements SearchPlugin {
     public pluginType: PluginType;
@@ -38,6 +39,14 @@ export class FakeSearchPlugin implements SearchPlugin {
 
     public isEnabled(): boolean {
         return this.enabled;
+    }
+
+    public isPreviewSupported(): boolean {
+        return false;
+    }
+    
+    public preview(searchResultItem: SearchResultItem): Promise<PreviewResult | null> {
+        return Promise.resolve(null);
     }
 
     public execute(searchResultItem: SearchResultItem, privileged: boolean): Promise<void> {
